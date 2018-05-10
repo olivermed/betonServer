@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/globalsign/mgo"
@@ -18,9 +19,14 @@ const COLLECTION string = "Users"
 var db *mgo.Database
 
 //FindByID finds user by id
-func (m *UsersDAO) FindByID(id string) (User, error) {
+func (m *UsersDAO) FindUser(email string, password string) (User, error) {
 	var user User
-	err := db.C(COLLECTION).FindId(bson.ObjectIdHex(id)).One(&user)
+	fmt.Println("Connection user :: ", email, password)
+	if errUpdate := db.C(COLLECTION).UpdateId(user.ID, bson.M{"token": GetNewToken(email)}); errUpdate == nil {
+		return user, errUpdate
+	}
+	err := db.C(COLLECTION).Find(bson.M{"email": email, "password": password}).One(&user)
+
 	return user, err
 }
 
