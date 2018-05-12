@@ -19,19 +19,17 @@ const COLLECTION string = "Users"
 var db *mgo.Database
 
 //FindByID finds user by id
-func (m *UsersDAO) FindUser(email string, password string) (User, error) {
+func (m *UsersDAO) FindUser(email string) (User, error) {
 	var user User
-	fmt.Println("Connection user :: ", email, password)
-	if errUpdate := db.C(COLLECTION).UpdateId(user.ID, bson.M{"token": GetNewToken(email)}); errUpdate == nil {
-		return user, errUpdate
-	}
-	err := db.C(COLLECTION).Find(bson.M{"email": email, "password": password}).One(&user)
+	fmt.Println("Connection user :: ", email)
+	err := db.C(COLLECTION).Find(bson.M{"email": email}).One(&user)
 
 	return user, err
 }
 
 //Insert push user into db
 func (m UsersDAO) Insert(user User) error {
+	fmt.Println("New user :: ", user.Email)
 	err := db.C(COLLECTION).Insert(&user)
 	return err
 }
